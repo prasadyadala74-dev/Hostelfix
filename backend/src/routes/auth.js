@@ -5,8 +5,12 @@ import User from "../models/User.js";
 
 const router = Router();
 
+function getJwtSecret() {
+  return process.env.JWT_SECRET || "hostelfix_default_jwt_secret_key_change_in_production";
+}
+
 function tokenFor(user) {
-  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: user._id, role: user.role }, getJwtSecret(), { expiresIn: "7d" });
 }
 
 router.post("/register", async (req, res) => {
@@ -40,7 +44,7 @@ router.post("/register", async (req, res) => {
     });
   } catch (err) {
     console.error("Registration error:", err);
-    res.status(500).json({ message: "Registration failed. Please try again." });
+    res.status(500).json({ message: err.message || "Registration failed. Please try again." });
   }
 });
 
@@ -61,7 +65,7 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ message: "Login failed. Please try again." });
+    res.status(500).json({ message: err.message || "Login failed. Please try again." });
   }
 });
 
